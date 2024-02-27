@@ -23,4 +23,9 @@ public class Player : NetworkBehaviour
         transform.position += moveDir * moveSpeed * Time.deltaTime;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotateSpeed);
     }
+
+    public bool IsMoving()
+    {
+        return isMoving;
+    }
 }
