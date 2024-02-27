@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
-
+    private bool isMoving;
     private void Update()
     {
         if (!IsOwner) return;
@@ -17,7 +17,10 @@ public class Player : NetworkBehaviour
         if (Input.GetKey(KeyCode.A)) moveDir.x = -1f;
         if (Input.GetKey(KeyCode.D)) moveDir.x = +1f;
 
+        isMoving = moveDir != Vector3.zero;
         float moveSpeed = 8f;
+        float rotateSpeed = 10;
         transform.position += moveDir * moveSpeed * Time.deltaTime;
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotateSpeed);
     }
 }
