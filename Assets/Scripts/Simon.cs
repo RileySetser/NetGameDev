@@ -115,6 +115,12 @@ public class Simon : MonoBehaviour
         cooldown = true;
         yield return new WaitForSeconds(5);
         Debug.Log("cooldown over");
+        timerLoops++;
+        if ((timerLoops % 2) == 0 && initTime >= 2)
+        {
+            initTime--;
+            Debug.Log("Speed Up!");
+        }
         cooldown = false;
     }
 
