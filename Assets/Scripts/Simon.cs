@@ -12,11 +12,11 @@ public class Simon : MonoBehaviour
 
     [SerializeField] private GameObject[] platforms;
 
-    private int initTime = 10;
-    private int timer = 0;
+    private int timer = 10;
     private int timerLoops = -1;
     private bool cooldown = false;
     private bool eventStarted = false;
+    private int cooldownTimer = 4;
 
     private void Update()
     {
@@ -29,14 +29,13 @@ public class Simon : MonoBehaviour
     private IEnumerator BeginCommand()
     {
         eventStarted = true;
-        timer = initTime;
         int commandNumber = 0; // Will add a random number once everything else gets implemented.
         Debug.Log(commandNumber);
 
         switch (commandNumber)
         {
             case 0: //colored zones
-                StartCoroutine(ColoredZones(timer));
+                StartCoroutine("ColoredZones");
                 Debug.Log("event is colored zones.");
                 break;
             case 1: //platforms
@@ -50,7 +49,7 @@ public class Simon : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator ColoredZones(int time)
+    private IEnumerator ColoredZones()
     {
         int selectedColor = Random.Range(0, 3);
         GameObject selectedZone = rZone;
@@ -77,7 +76,7 @@ public class Simon : MonoBehaviour
                 break;
         }
         Debug.Log("Stand on the " + zoneName);
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(timer);
         Debug.Log("Time's Up!");
 
         foreach (GameObject zone in zones)
@@ -113,13 +112,18 @@ public class Simon : MonoBehaviour
     {
         eventStarted = false;
         cooldown = true;
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(cooldownTimer);
         Debug.Log("cooldown over");
         timerLoops++;
-        if ((timerLoops % 2) == 0 && initTime >= 2)
+        if ((timerLoops % 2) == 0 && timer >= 2)
         {
-            initTime--;
-            Debug.Log("Speed Up!");
+            timer--;
+            Debug.Log("Speed Up! : " + timer);
+        }
+        if ((timerLoops % 4) == 0 & cooldownTimer >= 1)
+        {
+            cooldownTimer--;
+            Debug.Log("Cooldown is faster! : " + cooldownTimer);
         }
         cooldown = false;
     }
