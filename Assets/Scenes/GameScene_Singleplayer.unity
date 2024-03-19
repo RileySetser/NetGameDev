@@ -1298,9 +1298,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1877018196646349231, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
+      propertyPath: rb
+      value: 
+      objectReference: {fileID: 1263848135}
+    - target: {fileID: 1877018196646349231, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
+      propertyPath: jumpAmount
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 4118566040135845651, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
       propertyPath: m_Name
       value: SP_Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7153147668178025977, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
+      propertyPath: m_Mass
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1584,6 +1596,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1148420631}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &1263848135 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 7153147668178025977, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
+  m_PrefabInstance: {fileID: 881267889}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1334577371
 GameObject:
   m_ObjectHideFlags: 0
