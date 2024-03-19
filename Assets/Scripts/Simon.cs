@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Simon : MonoBehaviour
 {
@@ -12,11 +14,26 @@ public class Simon : MonoBehaviour
 
     [SerializeField] private GameObject[] platforms;
 
-    private int timer = 10;
+    [SerializeField] private TMP_Text UI;
+
+    private int timer = 1;
     private int timerLoops = -1;
-    private bool cooldown = false;
+    private bool cooldown = true;
     private bool eventStarted = false;
-    private int cooldownTimer = 4;
+    private int cooldownTimer = 1;
+
+    private void Start()
+    {
+        foreach (GameObject platform in platforms)
+        {
+            platform.SetActive(false);
+        }
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("GameScene_Singleplayer"))
+        {
+            UI.text = "Get ready!";
+            StartCoroutine("StartGame");
+        }
+    }
 
     private void Update()
     {
@@ -26,10 +43,16 @@ public class Simon : MonoBehaviour
         }
     }
 
+    private IEnumerator StartGame()
+    {
+        yield return new WaitForSeconds(3);
+        cooldown = !cooldown;
+    }
+
     private IEnumerator BeginCommand()
     {
         eventStarted = true;
-        int commandNumber = 0; // Will add a random number once everything else gets implemented.
+        int commandNumber = Random.Range(0, 3); // Will add a random number once everything else gets implemented.
         Debug.Log(commandNumber);
 
         switch (commandNumber)
@@ -39,10 +62,17 @@ public class Simon : MonoBehaviour
                 Debug.Log("event is colored zones.");
                 break;
             case 1: //platforms
+                StartCoroutine("Platforms");
+                Debug.Log("event is platforms");
                 break;
             case 2: //bombs
+                StartCoroutine("Cooldown");
                 break;
             case 3: //do nothing
+                StartCoroutine("Cooldown");
+                break;
+            default:
+                StartCoroutine("Cooldown");
                 break;
         }
    
@@ -75,9 +105,9 @@ public class Simon : MonoBehaviour
                 zoneName = "blue zone.";
                 break;
         }
-        Debug.Log("Stand on the " + zoneName);
+        UI.text = "Stand in the " + zoneName;
         yield return new WaitForSeconds(timer);
-        Debug.Log("Time's Up!");
+        UI.text = "TIME'S UP!!";
 
         foreach (GameObject zone in zones)
         {
@@ -87,6 +117,7 @@ public class Simon : MonoBehaviour
             }
         }
         yield return new WaitForSeconds(3);
+        UI.text = "";
         Debug.Log("cooldown begins");
 
         foreach (GameObject zone in zones)
@@ -105,6 +136,57 @@ public class Simon : MonoBehaviour
         Debug.Log("event in progress");
         yield return new WaitForSeconds(time);
         Debug.Log("time's up! event is over.");
+        StartCoroutine("Cooldown");
+    }
+
+    private IEnumerator Platforms()
+    {
+        int platformSelected = Random.Range(0, 7);
+        Debug.Log("Selected platform: " + platforms[platformSelected].name);
+        GameObject highestPlatform = new GameObject();
+        // activate platforms
+        foreach (GameObject platform in platforms)
+        {      
+            platform.SetActive(true);
+
+
+            if (platform == platforms[platformSelected])
+            {
+                Debug.Log(platform.name);
+                platform.transform.position = new Vector3(platform.transform.position.x, 5, platform.transform.position.z);
+                highestPlatform = platform;
+            }
+            else
+            {
+                int rndHeight = Random.Range(1, 4);
+                platform.transform.position = new Vector3(platform.transform.position.x, rndHeight, platform.transform.position.z);
+            }
+        }
+        UI.text = "Stand on the highest platform!";
+        // change heights of platforms
+        // determine the highest platform
+        // timer
+        yield return new WaitForSeconds(timer);
+        UI.text = "TIME'S UP!!";
+        rZone.SetActive(false); gZone.SetActive(false); yZone.SetActive(false); bZone.SetActive(false);
+        foreach (GameObject platform in platforms)
+        {
+            if (platform != highestPlatform)
+            {
+                platform.SetActive(false);
+            }
+        }
+        yield return new WaitForSeconds(3);
+        UI.text = "";
+        Debug.Log("cooldown begins");
+        rZone.SetActive(true); gZone.SetActive(true); yZone.SetActive(true); bZone.SetActive(true);
+        foreach (GameObject platform in platforms)
+        {
+            if (platform.activeSelf)
+            {
+                platform.SetActive(false);
+            }
+        }
         StartCoroutine("Cooldown");
     }
 
