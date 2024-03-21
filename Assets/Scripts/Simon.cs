@@ -16,7 +16,7 @@ public class Simon : MonoBehaviour
 
     [SerializeField] private TMP_Text UI;
 
-    private int timer = 1;
+    [SerializeField] private int timer = 10;
     private int timerLoops = -1;
     private bool cooldown = true;
     private bool eventStarted = false;
@@ -32,6 +32,14 @@ public class Simon : MonoBehaviour
         {
             UI.text = "Get ready!";
             StartCoroutine("StartGame");
+            SP_Player player = (SP_Player)FindObjectOfType(typeof(SP_Player));
+            if (player)
+            {
+                Debug.Log("player found");
+            } else
+            {
+                Debug.Log("could not find player.");
+            }
         }
     }
 
@@ -53,17 +61,14 @@ public class Simon : MonoBehaviour
     {
         eventStarted = true;
         int commandNumber = Random.Range(0, 3); // Will add a random number once everything else gets implemented.
-        Debug.Log(commandNumber);
-
+        
         switch (commandNumber)
         {
             case 0: //colored zones
                 StartCoroutine("ColoredZones");
-                Debug.Log("event is colored zones.");
                 break;
             case 1: //platforms
                 StartCoroutine("Platforms");
-                Debug.Log("event is platforms");
                 break;
             case 2: //bombs
                 StartCoroutine("Cooldown");
@@ -118,7 +123,6 @@ public class Simon : MonoBehaviour
         }
         yield return new WaitForSeconds(3);
         UI.text = "";
-        Debug.Log("cooldown begins");
 
         foreach (GameObject zone in zones)
         {
@@ -130,19 +134,9 @@ public class Simon : MonoBehaviour
         StartCoroutine("Cooldown");
     }
 
-    private IEnumerator TestEvent(int time)
-    {
-        // event setup
-        Debug.Log("event in progress");
-        yield return new WaitForSeconds(time);
-        Debug.Log("time's up! event is over.");
-        StartCoroutine("Cooldown");
-    }
-
     private IEnumerator Platforms()
     {
         int platformSelected = Random.Range(0, 7);
-        Debug.Log("Selected platform: " + platforms[platformSelected].name);
         GameObject highestPlatform = new GameObject();
         // activate platforms
         foreach (GameObject platform in platforms)
@@ -152,7 +146,6 @@ public class Simon : MonoBehaviour
 
             if (platform == platforms[platformSelected])
             {
-                Debug.Log(platform.name);
                 platform.transform.position = new Vector3(platform.transform.position.x, 5, platform.transform.position.z);
                 highestPlatform = platform;
             }
@@ -178,7 +171,6 @@ public class Simon : MonoBehaviour
         }
         yield return new WaitForSeconds(3);
         UI.text = "";
-        Debug.Log("cooldown begins");
         rZone.SetActive(true); gZone.SetActive(true); yZone.SetActive(true); bZone.SetActive(true);
         foreach (GameObject platform in platforms)
         {
@@ -195,52 +187,16 @@ public class Simon : MonoBehaviour
         eventStarted = false;
         cooldown = true;
         yield return new WaitForSeconds(cooldownTimer);
-        Debug.Log("cooldown over");
         timerLoops++;
         if ((timerLoops % 2) == 0 && timer >= 2)
         {
+            UI.text = "Speed Up!";
             timer--;
-            Debug.Log("Speed Up! : " + timer);
         }
         if ((timerLoops % 4) == 0 & cooldownTimer >= 1)
         {
             cooldownTimer--;
-            Debug.Log("Cooldown is faster! : " + cooldownTimer);
         }
         cooldown = false;
     }
-
-    /*    private IEnumerator BeginCommand()
-        {
-            int commandNumber = 0; // Will add a random number once everything else gets implemented.
-            Debug.Log(commandNumber);
-
-            switch (commandNumber)
-            {
-                case 0: //colored zones
-                    StartCoroutine("ColoredZones");
-                    break;
-                case 1: //platforms
-                    break;
-                case 2: //bombs
-                    break;
-                case 3: //do nothing
-                    break;
-            }
-            yield return null;
-        }
-
-        private IEnumerator ResetTimer()
-        {
-            timerLoops++;
-            if (timerLoops > 0 && (timerLoops % 5) == 0) //for every 5 timer loops (but not at 0)
-            {
-                if (initTime !<= 4) //initTime can only go as low as 4 seconds. (after 30 loops)
-                {
-                    initTime -= 1f;
-                }
-            }
-            timer = initTime;
-            yield return null;
-        }*/
 }

@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 116824157}
   - component: {fileID: 116824156}
   - component: {fileID: 116824155}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -532,8 +532,8 @@ Transform:
   m_GameObject: {fileID: 302683014}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8, y: 0, z: 8}
-  m_LocalScale: {x: 16, y: 1, z: 16}
+  m_LocalPosition: {x: -8, y: -2, z: 8}
+  m_LocalScale: {x: 16, y: 5, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1856341178}
@@ -891,6 +891,7 @@ MonoBehaviour:
   - {fileID: 1148420631}
   - {fileID: 2011995857}
   UI: {fileID: 785390603}
+  timer: 10
 --- !u!4 &543396619
 Transform:
   m_ObjectHideFlags: 0
@@ -1247,8 +1248,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 404.41037, y: -42.99237}
-  m_SizeDelta: {x: 788.6464, y: 68.0712}
+  m_AnchoredPosition: {x: 404.41037, y: -30.765503}
+  m_SizeDelta: {x: 788.6464, y: 43.6174}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &881267889
 PrefabInstance:
@@ -1264,7 +1265,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 466946648466689494, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 466946648466689494, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1304,7 +1305,7 @@ PrefabInstance:
       objectReference: {fileID: 1263848135}
     - target: {fileID: 1877018196646349231, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
       propertyPath: jumpAmount
-      value: 40
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 4118566040135845651, guid: 70449be52f5d8324c9d7d453440086d0, type: 3}
       propertyPath: m_Name
@@ -1398,7 +1399,7 @@ GameObject:
   - component: {fileID: 1144280182}
   - component: {fileID: 1144280181}
   - component: {fileID: 1144280180}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_N
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1734,8 +1735,8 @@ Transform:
   m_GameObject: {fileID: 1387132629}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8, y: 0, z: -8}
-  m_LocalScale: {x: 16, y: 1, z: 16}
+  m_LocalPosition: {x: 8, y: -2, z: -8}
+  m_LocalScale: {x: 16, y: 5, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1856341178}
@@ -2007,7 +2008,6 @@ GameObject:
   - component: {fileID: 1915376410}
   - component: {fileID: 1915376409}
   - component: {fileID: 1915376408}
-  - component: {fileID: 1915376407}
   m_Layer: 0
   m_Name: Red_Ground
   m_TagString: Untagged
@@ -2024,33 +2024,12 @@ Transform:
   m_GameObject: {fileID: 1915376405}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8, y: 0, z: 8}
-  m_LocalScale: {x: 16, y: 1, z: 16}
+  m_LocalPosition: {x: 8, y: -2, z: 8}
+  m_LocalScale: {x: 16, y: 5, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1856341178}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1915376407
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915376405}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 37.08, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &1915376408
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2289,8 +2268,8 @@ Transform:
   m_GameObject: {fileID: 1988506975}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8, y: 0, z: -8}
-  m_LocalScale: {x: 16, y: 1, z: 16}
+  m_LocalPosition: {x: -8, y: -2, z: -8}
+  m_LocalScale: {x: 16, y: 5, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1856341178}
@@ -2378,7 +2357,7 @@ GameObject:
   - component: {fileID: 1989499354}
   - component: {fileID: 1989499353}
   - component: {fileID: 1989499352}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_W
   m_TagString: Untagged
   m_Icon: {fileID: 0}

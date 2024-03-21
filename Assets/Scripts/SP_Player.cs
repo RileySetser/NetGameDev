@@ -9,6 +9,14 @@ public class SP_Player : MonoBehaviour
     [SerializeField] private float jumpAmount = 10;
     private bool isMoving;
     private bool isGrounded;
+    private float distToGround;
+
+    private void Start()
+    {
+        distToGround = GetComponent<Collider>().bounds.extents.y;
+        Debug.Log(distToGround);
+    }
+
     private void Update()
     {
         Vector3 moveDir = new Vector3(0, 0, 0);
@@ -24,18 +32,24 @@ public class SP_Player : MonoBehaviour
         transform.position += moveDir * moveSpeed * Time.deltaTime;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotateSpeed);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
         {
             rb.AddForce(Vector3.up * jumpAmount, ForceMode.Impulse);
+            
         }
-        if (Physics.Raycast(transform.position, Vector3.down, 0.4f))
+    }
+
+    private bool IsGrounded()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 1f , 0), transform.TransformDirection(Vector3.down), out hit, distToGround + 0.1f))
         {
-            Debug.Log("a");
-            isGrounded = true;
+            Debug.DrawRay(transform.position + new Vector3(0, 1f, 0), transform.TransformDirection(Vector3.down) * hit.distance, Color.red, 3.0f);
         } else
         {
-            isGrounded = false;
+            Debug.DrawRay(transform.position + new Vector3(0, 1f, 0), transform.TransformDirection(Vector3.down) * 1000, Color.blue, 3.0f);
         }
+        return Physics.Raycast(transform.position + new Vector3(0, 1f, 0), transform.TransformDirection(Vector3.down), out hit, distToGround + 0.1f);
     }
 
     public bool IsMoving()
