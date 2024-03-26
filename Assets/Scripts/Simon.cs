@@ -15,12 +15,14 @@ public class Simon : MonoBehaviour
     [SerializeField] private GameObject[] platforms;
 
     [SerializeField] private TMP_Text UI;
+    private SP_Player sp_player;
 
     [SerializeField] private int timer = 10;
     private int timerLoops = -1;
     private bool cooldown = true;
     private bool eventStarted = false;
     private int cooldownTimer = 1;
+    private bool gameOver = false;
 
     private void Start()
     {
@@ -32,20 +34,13 @@ public class Simon : MonoBehaviour
         {
             UI.text = "Get ready!";
             StartCoroutine("StartGame");
-            SP_Player player = (SP_Player)FindObjectOfType(typeof(SP_Player));
-            if (player)
-            {
-                Debug.Log("player found");
-            } else
-            {
-                Debug.Log("could not find player.");
-            }
+            sp_player = (SP_Player)FindObjectOfType(typeof(SP_Player));
         }
     }
 
     private void Update()
     {
-        if (!cooldown && !eventStarted)
+        if (!cooldown && !eventStarted && !gameOver)
         {
             StartCoroutine("BeginCommand");
         }
@@ -186,17 +181,24 @@ public class Simon : MonoBehaviour
     {
         eventStarted = false;
         cooldown = true;
-        yield return new WaitForSeconds(cooldownTimer);
-        timerLoops++;
-        if ((timerLoops % 2) == 0 && timer >= 2)
+        if (sp_player == null)
         {
-            UI.text = "Speed Up!";
-            timer--;
-        }
-        if ((timerLoops % 4) == 0 & cooldownTimer >= 1)
+            gameOver = true;
+            UI.text = "GAME OVER!";
+        } else
         {
-            cooldownTimer--;
-        }
-        cooldown = false;
+            yield return new WaitForSeconds(cooldownTimer);
+            timerLoops++;
+            if ((timerLoops % 2) == 0 && timer >= 2)
+            {
+                UI.text = "Speed Up!";
+                timer--;
+            }
+            if ((timerLoops % 4) == 0 & cooldownTimer >= 1)
+            {
+                cooldownTimer--;
+            }
+            cooldown = false;
+        } 
     }
 }
