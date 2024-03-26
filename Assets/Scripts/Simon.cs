@@ -95,19 +95,19 @@ public class Simon : MonoBehaviour
         {
             case 0: //red
                 selectedZone = rZone;
-                zoneName = "red zone.";
+                zoneName = "<color=#a30303>red zone.";
                 break;
             case 1: //green
                 selectedZone = gZone;
-                zoneName = "green zone.";
+                zoneName = "<color=#0b7a01>green zone.";
                 break;
             case 2: //yellow
                 selectedZone = yZone;
-                zoneName = "yellow zone.";
+                zoneName = "<color=#e6ae07>yellow zone.";
                 break;
             case 3: //blue
                 selectedZone = bZone;
-                zoneName = "blue zone.";
+                zoneName = "<color=#01157a>blue zone.";
                 break;
         }
         UI.text = "Stand in the " + zoneName;
