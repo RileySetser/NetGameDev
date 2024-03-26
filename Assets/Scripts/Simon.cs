@@ -15,13 +15,19 @@ public class Simon : MonoBehaviour
     [SerializeField] private GameObject[] platforms;
 
     [SerializeField] private TMP_Text UI;
+    [SerializeField] private TMP_Text scoreUI;
     private SP_Player sp_player;
 
     [SerializeField] private int timer = 10;
-    private int timerLoops = -1;
+    private int score = 0;
+    private int timerLoops = 0;
+    private int cooldownTimer = 3;
+    
+    private string donot = "<color=#a30303>DON'T <color=#000000>";
+
+    private bool donot_bool = true;
     private bool cooldown = true;
     private bool eventStarted = false;
-    private int cooldownTimer = 1;
     private bool gameOver = false;
 
     private void Start()
@@ -44,6 +50,7 @@ public class Simon : MonoBehaviour
         {
             StartCoroutine("BeginCommand");
         }
+        scoreUI.text = "Score: " + score;
     }
 
     private IEnumerator StartGame()
@@ -52,10 +59,19 @@ public class Simon : MonoBehaviour
         cooldown = !cooldown;
     }
 
+    private IEnumerator DoOrDont() // Determines if "Simon Says" is added at the beginning.
+    {
+        int coinFlip = Random.Range(1, 100);
+        donot = (coinFlip <= 50) ? "" : "<color=#a30303>DON'T <color=#000000>";
+        donot_bool = (donot == "") ? false : true;
+        yield return null;
+    }
+
     private IEnumerator BeginCommand()
     {
         eventStarted = true;
         int commandNumber = Random.Range(0, 3); // Will add a random number once everything else gets implemented.
+        StartCoroutine("DoOrDont");
         
         switch (commandNumber)
         {
@@ -105,16 +121,23 @@ public class Simon : MonoBehaviour
                 zoneName = "<color=#01157a>blue zone.";
                 break;
         }
-        UI.text = "Stand in the " + zoneName;
+        UI.text = donot + "Stand in the " + zoneName;
         yield return new WaitForSeconds(timer);
         UI.text = "TIME'S UP!!";
 
         foreach (GameObject zone in zones)
         {
-            if (zone != selectedZone)
+            if (!donot_bool)
             {
-                zone.SetActive(false);
+                if (zone != selectedZone)
+                {
+                    zone.SetActive(false);
+                }
+            } else
+            {
+                selectedZone.SetActive(false);
             }
+            
         }
         yield return new WaitForSeconds(3);
         UI.text = "";
@@ -141,16 +164,16 @@ public class Simon : MonoBehaviour
 
             if (platform == platforms[platformSelected])
             {
-                platform.transform.position = new Vector3(platform.transform.position.x, 5, platform.transform.position.z);
+                platform.transform.position = new Vector3(platform.transform.position.x, 4, platform.transform.position.z);
                 highestPlatform = platform;
             }
             else
             {
-                int rndHeight = Random.Range(1, 4);
+                float rndHeight = Random.Range(1, 3);
                 platform.transform.position = new Vector3(platform.transform.position.x, rndHeight, platform.transform.position.z);
             }
         }
-        UI.text = "Stand on the highest platform!";
+        UI.text = donot + "Stand on the highest platform!";
         // change heights of platforms
         // determine the highest platform
         // timer
@@ -159,10 +182,17 @@ public class Simon : MonoBehaviour
         rZone.SetActive(false); gZone.SetActive(false); yZone.SetActive(false); bZone.SetActive(false);
         foreach (GameObject platform in platforms)
         {
-            if (platform != highestPlatform)
+            if (!donot_bool)
             {
-                platform.SetActive(false);
+                if (platform != highestPlatform)
+                {
+                    platform.SetActive(false);
+                }
+            } else
+            {
+                highestPlatform.SetActive(false);
             }
+            
         }
         yield return new WaitForSeconds(3);
         UI.text = "";
@@ -184,14 +214,16 @@ public class Simon : MonoBehaviour
         if (sp_player == null)
         {
             gameOver = true;
-            UI.text = "GAME OVER!";
+            UI.text = "<color=#FF6666>GAME OVER!";
         } else
         {
+            UI.text = "...";
+            score++;
             yield return new WaitForSeconds(cooldownTimer);
             timerLoops++;
             if ((timerLoops % 2) == 0 && timer >= 2)
             {
-                UI.text = "Speed Up!";
+                UI.text = "<color=#FFBB66>Speed Up!";
                 timer--;
             }
             if ((timerLoops % 4) == 0 & cooldownTimer >= 1)

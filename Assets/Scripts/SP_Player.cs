@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SP_Player : MonoBehaviour
@@ -10,11 +11,12 @@ public class SP_Player : MonoBehaviour
     private bool isMoving;
     private bool isGrounded;
     private float distToGround;
+    private Collider collider;
 
     private void Start()
     {
+        collider = GetComponent<Collider>();
         distToGround = GetComponent<Collider>().bounds.extents.y;
-        Debug.Log(distToGround);
     }
 
     private void Update()
