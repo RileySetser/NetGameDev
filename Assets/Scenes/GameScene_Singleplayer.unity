@@ -1094,6 +1094,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543396619}
+  - component: {fileID: 543396620}
   - component: {fileID: 543396618}
   m_Layer: 0
   m_Name: Simon
@@ -1130,6 +1131,7 @@ MonoBehaviour:
   UI: {fileID: 785390603}
   scoreUI: {fileID: 424662735}
   timer: 10
+  mp_playerPrefab: {fileID: 0}
 --- !u!4 &543396619
 Transform:
   m_ObjectHideFlags: 0
@@ -1145,6 +1147,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &543396620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543396617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 22492665
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &608191276
 GameObject:
   m_ObjectHideFlags: 0
