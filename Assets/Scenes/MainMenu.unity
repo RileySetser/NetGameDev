@@ -727,6 +727,8 @@ GameObject:
   - component: {fileID: 309165605}
   - component: {fileID: 309165604}
   - component: {fileID: 309165603}
+  - component: {fileID: 309165607}
+  - component: {fileID: 309165608}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -820,6 +822,41 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &309165607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309165602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 932047982
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &309165608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309165602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d60664a790ce96b49ad55a74c9d834f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  createBtn: {fileID: 2052732663}
+  joinBtn: {fileID: 1253763331}
+  SP_Btn: {fileID: 1877011883}
 --- !u!1 &314898794
 GameObject:
   m_ObjectHideFlags: 0

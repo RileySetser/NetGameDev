@@ -16,7 +16,16 @@ public class MainMenu_NetworkUI : NetworkBehaviour
     {
         createBtn.onClick.AddListener(() =>
         {
-
+            NetworkManager.Singleton.StartHost();
+            NetworkManager.Singleton.SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
+        });
+        joinBtn.onClick.AddListener(() =>
+        {
+            NetworkManager.Singleton.StartClient();
+        });
+        SP_Btn.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("GameScene_Singleplayer");
         });
     }
 }
