@@ -70,7 +70,7 @@ public class Simon : MonoBehaviour
     private IEnumerator BeginCommand()
     {
         eventStarted = true;
-        int commandNumber = Random.Range(0, 3); // Will add a random number once everything else gets implemented.
+        int commandNumber = Random.Range(0, 1); // Will add a random number once everything else gets implemented.
         StartCoroutine("DoOrDont");
         
         switch (commandNumber)
