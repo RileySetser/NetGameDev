@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Simon : MonoBehaviour
+public class Simon : NetworkBehaviour
 {
     //grounds
     [SerializeField] private GameObject rZone; //0
@@ -15,16 +16,19 @@ public class Simon : MonoBehaviour
     [SerializeField] private GameObject[] platforms;
 
     [SerializeField] private TMP_Text UI;
-    [SerializeField] private TMP_Text scoreUI;
+    [SerializeField] private TMP_Text scoreUI = null;
     private SP_Player sp_player;
 
     [SerializeField] private int timer = 10;
+
+    [SerializeField] private Transform mp_playerPrefab;
     private int score = 0;
     private int timerLoops = 0;
     private int cooldownTimer = 3;
     
     private string donot = "<color=#a30303>DON'T <color=#000000>";
 
+    private bool isSingleplayer = false;
     private bool donot_bool = true;
     private bool cooldown = true;
     private bool eventStarted = false;
@@ -38,9 +42,30 @@ public class Simon : MonoBehaviour
         }
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("GameScene_Singleplayer"))
         {
+            isSingleplayer = true;
             UI.text = "Get ready!";
             StartCoroutine("StartGame");
             sp_player = (SP_Player)FindObjectOfType(typeof(SP_Player));
+        } else
+        {
+            // for multiplayer
+        }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
+        }
+    }
+
+    private void SceneManager_OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            Transform playerTransform = Instantiate(mp_playerPrefab);
+            playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
         }
     }
 
@@ -50,7 +75,7 @@ public class Simon : MonoBehaviour
         {
             StartCoroutine("BeginCommand");
         }
-        scoreUI.text = "Score: " + score;
+        if (isSingleplayer) scoreUI.text = "Score: " + score;
     }
 
     private IEnumerator StartGame()
