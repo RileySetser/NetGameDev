@@ -30,7 +30,7 @@ public class Simon : NetworkBehaviour
 
     private bool isSingleplayer = false;
     private bool donot_bool = true;
-    private bool cooldown = true;
+    private bool cooldown = false;
     private bool eventStarted = false;
     private bool gameOver = false;
 
@@ -52,25 +52,12 @@ public class Simon : NetworkBehaviour
         }
     }
 
-    public override void OnNetworkSpawn()
-    {
-        if (IsServer)
-        {
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
-        }
-    }
-
-    private void SceneManager_OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
-    {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            Transform playerTransform = Instantiate(mp_playerPrefab);
-            playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-        }
-    }
-
     private void Update()
     {
+        if (!IsServer)
+        {
+            return;
+        }
         if (!cooldown && !eventStarted && !gameOver)
         {
             StartCoroutine("BeginCommand");
