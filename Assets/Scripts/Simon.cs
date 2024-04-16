@@ -1,3 +1,4 @@
+using Mono.CSharp;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -18,6 +19,7 @@ public class Simon : NetworkBehaviour
     [SerializeField] private TMP_Text UI;
     [SerializeField] private TMP_Text scoreUI = null;
     private SP_Player sp_player;
+    private Player[] players; //count players, if all players dead, game over
 
     [SerializeField] private int timer = 10;
 
@@ -30,7 +32,7 @@ public class Simon : NetworkBehaviour
 
     private bool isSingleplayer = false;
     private bool donot_bool = true;
-    private bool cooldown = false;
+    private bool cooldown = true;
     private bool eventStarted = false;
     private bool gameOver = false;
 
@@ -48,6 +50,7 @@ public class Simon : NetworkBehaviour
             sp_player = (SP_Player)FindObjectOfType(typeof(SP_Player));
         } else
         {
+            cooldown = false;
             // for multiplayer
         }
     }
@@ -56,7 +59,10 @@ public class Simon : NetworkBehaviour
     {
         if (!IsServer)
         {
-            return;
+            if (!isSingleplayer)
+            {
+                return;
+            } 
         }
         if (!cooldown && !eventStarted && !gameOver)
         {
@@ -223,7 +229,7 @@ public class Simon : NetworkBehaviour
     {
         eventStarted = false;
         cooldown = true;
-        if (sp_player == null)
+        if (sp_player == null && isSingleplayer)
         {
             gameOver = true;
             UI.text = "<color=#FF6666>GAME OVER!";
