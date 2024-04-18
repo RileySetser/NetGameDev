@@ -50,7 +50,6 @@ public class Simon : NetworkBehaviour
             sp_player = (SP_Player)FindObjectOfType(typeof(SP_Player));
         } else
         {
-            cooldown = false;
             // for multiplayer
         }
     }
@@ -63,6 +62,10 @@ public class Simon : NetworkBehaviour
             {
                 return;
             } 
+        }
+        if (cooldown)
+        {
+            StartCoroutine("StartGame");
         }
         if (!cooldown && !eventStarted && !gameOver)
         {
@@ -90,27 +93,34 @@ public class Simon : NetworkBehaviour
         eventStarted = true;
         int commandNumber = Random.Range(0, 1); // Will add a random number once everything else gets implemented.
         StartCoroutine("DoOrDont");
+        string coroutineName = "";
         
-        switch (commandNumber)
+            switch (commandNumber)
+            {
+                case 0: //colored zones
+                    coroutineName = "ColoredZones";
+                    break;
+                case 1: //platforms
+                     coroutineName = "Platforms";
+                    break;
+                default:
+                    coroutineName = "Cooldown";
+                    break;
+            }
+        if (!isSingleplayer)
         {
-            case 0: //colored zones
-                StartCoroutine("ColoredZones");
-                break;
-            case 1: //platforms
-                StartCoroutine("Platforms");
-                break;
-            case 2: //bombs
-                StartCoroutine("Cooldown");
-                break;
-            case 3: //do nothing
-                StartCoroutine("Cooldown");
-                break;
-            default:
-                StartCoroutine("Cooldown");
-                break;
+            StartCoroutineClientRpc(coroutineName);
+        } else // if it is in singleplayer.
+        {
+            StartCoroutine(coroutineName);
         }
-   
         yield return null;
+    }
+
+    [ClientRpc]
+    private void StartCoroutineClientRpc(string name)
+    {
+        StartCoroutine(name);
     }
 
     private IEnumerator ColoredZones()
