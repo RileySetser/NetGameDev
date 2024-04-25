@@ -38,7 +38,7 @@ public class PlayerReadyLogic : NetworkBehaviour
 
         if (allClientsReady)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("GameScene_Multiplayer", LoadSceneMode.Single);
         }
     }
 }

@@ -18,17 +18,21 @@ public class Simon : NetworkBehaviour
 
     [SerializeField] private TMP_Text UI;
     [SerializeField] private TMP_Text scoreUI = null;
+    [SerializeField] private TMP_Text speedUI = null;
     private SP_Player sp_player;
     private Player[] players; //count players, if all players dead, game over
 
     [SerializeField] private int timer = 10;
+    private NetworkVariable<int> networkTimer = new NetworkVariable<int>();
 
     [SerializeField] private Transform mp_playerPrefab;
     private int score = 0;
     private int timerLoops = 0;
     private int cooldownTimer = 3;
-    
-    private string donot = "<color=#a30303>DON'T <color=#000000>";
+
+    private NetworkVariable<int> networkScore = new NetworkVariable<int>();
+
+    private string donot = "";
 
     private bool isSingleplayer = false;
     private bool donot_bool = true;
@@ -54,6 +58,31 @@ public class Simon : NetworkBehaviour
         }
     }
 
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            networkScore.Value = 0;
+            networkTimer.Value = 10;
+        } else
+        {
+            networkScore.OnValueChanged += OnScoreChanged;
+            networkTimer.OnValueChanged += OnTimerChanged;
+        }
+    }
+
+    public void OnScoreChanged(int previous, int current)
+    {
+        Debug.Log($"Detected NetworkVariable Change: Previous: {previous} | Current: {current}");
+        score = current;
+        scoreUI.text = "Score: " + score;
+    }
+
+    public void OnTimerChanged(int previous, int current)
+    {
+        timer = current;
+    }
+
     private void Update()
     {
         if (!IsServer)
@@ -69,9 +98,9 @@ public class Simon : NetworkBehaviour
         }
         if (!cooldown && !eventStarted && !gameOver)
         {
-            StartCoroutine("BeginCommand");
+            BeginCommand();
         }
-        if (isSingleplayer) scoreUI.text = "Score: " + score;
+        //scoreUI.text = "Score: " + score;
     }
 
     private IEnumerator StartGame()
@@ -80,28 +109,50 @@ public class Simon : NetworkBehaviour
         cooldown = !cooldown;
     }
 
-    private IEnumerator DoOrDont() // Determines if "Simon Says" is added at the beginning.
+    private string DontDisplay(bool dont_bool)
     {
-        int coinFlip = Random.Range(1, 100);
-        donot = (coinFlip <= 50) ? "" : "<color=#a30303>DON'T <color=#000000>";
-        donot_bool = (donot == "") ? false : true;
-        yield return null;
+        string dontText = dont_bool ? "<color=#a30303>DON'T <color=#000000>" : "";
+        return dontText;
     }
 
-    private IEnumerator BeginCommand()
+    private bool DoOrDont()
+    {
+        int coinFlip = Random.Range(1, 100);
+        bool dontChance = (coinFlip <= 50) ? false : true;
+        return dontChance;
+    }
+
+    [ClientRpc]
+    private void UpdateScoreClientRpc()
+    {
+        Debug.Log($"Network Score: {networkScore.Value} | Client Score: {score}");
+        if (IsClient) { 
+            scoreUI.text = "Score: " + networkScore.Value;
+        }
+        else
+        {
+            scoreUI.text = "Score: " + score;
+        }
+    }
+
+    private void BeginCommand()
     {
         eventStarted = true;
         int commandNumber = Random.Range(0, 1); // Will add a random number once everything else gets implemented.
-        StartCoroutine("DoOrDont");
+        
+        bool dontChance = DoOrDont();
         string coroutineName = "";
+        int coroutineNum = 0;
         
             switch (commandNumber)
             {
                 case 0: //colored zones
+                    coroutineNum = Random.Range(0, 3); //determines what zone is selected
                     coroutineName = "ColoredZones";
                     break;
                 case 1: //platforms
-                     coroutineName = "Platforms";
+                    coroutineNum = Random.Range(0, 7); //determines what platform is selected
+                    coroutineName = "Platforms";
                     break;
                 default:
                     coroutineName = "Cooldown";
@@ -109,23 +160,26 @@ public class Simon : NetworkBehaviour
             }
         if (!isSingleplayer)
         {
-            StartCoroutineClientRpc(coroutineName);
+            UpdateScoreClientRpc();
+            StartCoroutineClientRpc(coroutineName, coroutineNum, dontChance);
         } else // if it is in singleplayer.
         {
-            StartCoroutine(coroutineName);
+            StartCoroutine(coroutineName, coroutineNum);
         }
-        yield return null;
     }
 
     [ClientRpc]
-    private void StartCoroutineClientRpc(string name)
+    private void StartCoroutineClientRpc(string name, int coroutineNum, bool dontChance)
     {
-        StartCoroutine(name);
+        
+        object[] parms = new object[2]{ coroutineNum, dontChance };
+        StartCoroutine(name, parms);
     }
 
-    private IEnumerator ColoredZones()
+    private IEnumerator ColoredZones(object[] parms)
     {
-        int selectedColor = Random.Range(0, 3);
+        int selectedColor = (int)parms[0];
+        bool dontChance = (bool)parms[1];
         GameObject selectedZone = rZone;
         string zoneName = "";
         GameObject[] zones = { rZone, gZone, yZone, bZone };
@@ -149,13 +203,21 @@ public class Simon : NetworkBehaviour
                 zoneName = "<color=#01157a>blue zone.";
                 break;
         }
-        UI.text = donot + "Stand in the " + zoneName;
-        yield return new WaitForSeconds(timer);
+        string dontText = DontDisplay(dontChance);
+        UI.text = dontText + "Stand in the " + zoneName;
+        if (IsServer)
+        {
+            yield return new WaitForSeconds(networkTimer.Value);
+        }
+        else
+        {
+            yield return new WaitForSeconds(timer);
+        }
         UI.text = "TIME'S UP!!";
 
         foreach (GameObject zone in zones)
         {
-            if (!donot_bool)
+            if (!dontChance)
             {
                 if (zone != selectedZone)
                 {
@@ -168,7 +230,6 @@ public class Simon : NetworkBehaviour
             
         }
         yield return new WaitForSeconds(3);
-        UI.text = "";
 
         foreach (GameObject zone in zones)
         {
@@ -177,12 +238,14 @@ public class Simon : NetworkBehaviour
                 zone.SetActive(true);
             }
         }
+        cooldown = true;
         StartCoroutine("Cooldown");
     }
 
-    private IEnumerator Platforms()
+    private IEnumerator Platforms(object[] parms)
     {
-        int platformSelected = Random.Range(0, 7);
+        int platformSelected = (int)parms[0];
+        bool dontChance = (bool)parms[1];
         GameObject highestPlatform = new GameObject();
         // activate platforms
         foreach (GameObject platform in platforms)
@@ -201,16 +264,24 @@ public class Simon : NetworkBehaviour
                 platform.transform.position = new Vector3(platform.transform.position.x, rndHeight, platform.transform.position.z);
             }
         }
-        UI.text = donot + "Stand on the highest platform!";
+        string dontText = DontDisplay(dontChance);
+        UI.text = dontText + "Stand on the highest platform!";
         // change heights of platforms
         // determine the highest platform
         // timer
-        yield return new WaitForSeconds(timer);
+        if (IsServer)
+        {
+            yield return new WaitForSeconds(networkTimer.Value);
+        } else
+        {
+            yield return new WaitForSeconds(timer);
+        }
+        
         UI.text = "TIME'S UP!!";
         rZone.SetActive(false); gZone.SetActive(false); yZone.SetActive(false); bZone.SetActive(false);
         foreach (GameObject platform in platforms)
         {
-            if (!donot_bool)
+            if (!dontChance)
             {
                 if (platform != highestPlatform)
                 {
@@ -232,33 +303,42 @@ public class Simon : NetworkBehaviour
                 platform.SetActive(false);
             }
         }
+        cooldown = true;
         StartCoroutine("Cooldown");
     }
 
     private IEnumerator Cooldown()
     {
         eventStarted = false;
-        cooldown = true;
         if (sp_player == null && isSingleplayer)
         {
             gameOver = true;
             UI.text = "<color=#FF6666>GAME OVER!";
         } else
         {
-            UI.text = "...";
-            score++;
-            yield return new WaitForSeconds(cooldownTimer);
+            speedUI.text = "";
+            if (IsServer)
+            {
+                networkScore.Value++;
+            }
             timerLoops++;
             if ((timerLoops % 2) == 0 && timer >= 2)
             {
-                UI.text = "<color=#FFBB66>Speed Up!";
-                timer--;
+                speedUI.text = "<color=#FFBB66>Speed Up!";
+                if (IsServer)
+                {
+                    networkTimer.Value--;
+                }
             }
-            if ((timerLoops % 4) == 0 & cooldownTimer >= 1)
+            if ((timerLoops % 4) == 0 && cooldownTimer >= 1)
             {
                 cooldownTimer--;
             }
+            yield return new WaitForSeconds(cooldownTimer);
+            speedUI.text = "";
             cooldown = false;
         } 
     }
+
+    
 }
